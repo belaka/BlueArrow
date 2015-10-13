@@ -15,16 +15,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(console_handler)
  
-#os.putenv('SDL_FBDEV', '/dev/fb1')
-#os.putenv('SDL_MOUSEDRV', 'TSLIB')
-#os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
+os.putenv('SDL_FBDEV', '/dev/fb1')
+os.putenv('SDL_MOUSEDRV', 'TSLIB')
+os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
  
 MARGIN = 20
 
 class MainScreen(ui.Scene):
     def __init__(self):
         ui.Scene.__init__(self)
- 
+
         self.system_button = ui.Button(ui.Rect(MARGIN, MARGIN, 130, 60), 'System')
         self.system_button.on_clicked.connect(self.quit_action)
         self.add_child(self.system_button)
