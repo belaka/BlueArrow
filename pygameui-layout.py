@@ -42,6 +42,7 @@ import signal
 import threading
 import time
 from wifi import *
+from pprint import pprint
 
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
@@ -64,17 +65,24 @@ MARGIN = 20
 SMALL_MARGIN = 10
 
 class MainScreen(ui.Scene):
+	
     def __init__(self):
-        ui.Scene.__init__(self)
-
-        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), 'Clock')
-        self.clock_button.on_clicked.connect(self.main_action)
-        self.add_child(self.clock_button)
-        
-        self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Quit')
-        self.quit_button.on_clicked.connect(self.main_action)
-        self.add_child(self.quit_button)
-        
+		
+		ui.Scene.__init__(self)
+		
+		self.clock = ui.pygame.time.Clock()
+		
+		l = dir(ui.pygame)
+		pprint(l, indent=2)
+		
+		self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Quit')
+		self.quit_button.on_clicked.connect(self.main_action)
+		self.add_child(self.quit_button)
+		
+		self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), str(self.clock.get_fps()))
+		self.clock_button.on_clicked.connect(self.main_action)
+		self.add_child(self.clock_button)
+		
     def main_action(self, btn, mbtn):
         logger.info(btn.text)
         if btn.text == 'Clock':
@@ -83,10 +91,15 @@ class MainScreen(ui.Scene):
         elif btn.text == 'Quit':
             sys.exit()
             
+    def display_fps(self, clock):
+		ui.pygame.display.flip()
+	
     def update(self, dt):
         ui.Scene.update(self, dt)
 
+
 class MenuScreen(ui.Scene):
+	
     def __init__(self):
         ui.Scene.__init__(self)
  
@@ -203,9 +216,9 @@ class WifiScreen(ui.Scene):
     def check_open_ssids(self):
         open_ssids = ["--SELECT AN SSID--"]
         for cell in Cell.all('wlan0'):
-            if cell.encrypted == False:
+            #if cell.encrypted == False:
                 # print cell.ssid
-                open_ssids.append(cell.ssid)
+            open_ssids.append(cell.ssid)
         return open_ssids
 
     def wifi_actions(self, btn, mbtn):
