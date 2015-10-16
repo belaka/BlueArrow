@@ -21,8 +21,8 @@ BLACK      = (  0,   0,   0)
 HOURHANDCOLOR = DARKRED
 MINUTEHANDCOLOR = RED
 SECONDHANDCOLOR = YELLOW
-NUMBERBOXCOLOR = BRIGHTBLUE
-BGCOLOR = WHITE
+NUMBERBOXCOLOR = BLACK
+BGCOLOR = BLACK
 
 WINDOWWIDTH = 640 # width of the program's window, in pixels
 WINDOWHEIGHT = 480 # height in pixels
@@ -80,7 +80,7 @@ pygame.display.set_caption('Trig Clock')
 fontObj = pygame.font.Font('freesansbold.ttf', 26)
 
 # render the Surface objects that have the clock numbers written on them
-clockNumSurfs = [fontObj.render('%s' % (i), True, BGCOLOR, NUMBERBOXCOLOR)
+clockNumSurfs = [fontObj.render('%s' % (i), True, WHITE, NUMBERBOXCOLOR)
                  for i in [12] + list(range(1, 12))] # Put 12 at the front of the list since clocks start at 12, not 1.
 
 

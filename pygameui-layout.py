@@ -41,6 +41,7 @@ import logging
 import signal
 import threading
 import time
+import datetime
 from wifi import *
 from pprint import pprint
 
@@ -65,40 +66,41 @@ MARGIN = 20
 SMALL_MARGIN = 10
 
 class MainScreen(ui.Scene):
-	
+
     def __init__(self):
         ui.Scene.__init__(self)
-		
+
         self.clock = ui.pygame.time.Clock()
-		
-        l = dir(ui.pygame)
-        pprint(l, indent=2)
-		
+
+        self.menu_button = ui.Button(ui.Rect(MARGIN, 140, 280, 30), 'Menu')
+        self.menu_button.on_clicked.connect(self.main_action)
+        self.add_child(self.menu_button)
+        
         self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Quit')
         self.quit_button.on_clicked.connect(self.main_action)
         self.add_child(self.quit_button)
-		
-        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), str(self.clock.get_fps()))
-        self.clock_button.on_clicked.connect(self.main_action)
-        self.add_child(self.clock_button)
 
     def main_action(self, btn, mbtn):
         logger.info(mbtn)
-        if btn.text == 'Clock':
-            logger.info('Clock was clicked!!!')
+        if btn.text == 'Menu':
+            logger.info('Menu was clicked!')
             ui.scene.push(MenuScreen())
         elif btn.text == 'Quit':
             sys.exit()
             
     def display_fps(self, clock):
-		ui.pygame.display.flip()
-	
+        ui.pygame.display.flip()
+
     def update(self, dt):
+        self.clock.tick(0)
+        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 60), str(time.strftime("%Y-%m-%d %H:%M:%S")))
+        self.clock_button.on_clicked.connect(self.main_action)
+        self.add_child(self.clock_button)
         ui.Scene.update(self, dt)
 
 
 class MenuScreen(ui.Scene):
-	
+
     def __init__(self):
         ui.Scene.__init__(self)
  
