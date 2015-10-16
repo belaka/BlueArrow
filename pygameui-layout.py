@@ -41,7 +41,6 @@ import logging
 import signal
 import threading
 import time
-import datetime
 from wifi import *
 from pprint import pprint
 
@@ -52,7 +51,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(console_handler)
 
-DEV_MODE = True
+DEV_MODE = False
 
 if DEV_MODE ==  False:
     os.putenv('SDL_FBDEV', '/dev/fb1')
@@ -92,10 +91,12 @@ class MainScreen(ui.Scene):
         ui.pygame.display.flip()
 
     def update(self, dt):
+        #Write function here
         self.clock.tick(0)
-        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 60), str(time.strftime("%Y-%m-%d %H:%M:%S")))
+        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 110), str(time.strftime("%Y-%m-%d %H:%M:%S")))
         self.clock_button.on_clicked.connect(self.main_action)
         self.add_child(self.clock_button)
+        #Scene Update
         ui.Scene.update(self, dt)
 
 
