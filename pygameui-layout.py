@@ -67,7 +67,10 @@ class MainScreen(ui.Scene):
     def __init__(self):
         ui.Scene.__init__(self)
 
-        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), 'Clock')
+        clock = pygame.time.Clock()
+        self.strTime = time.strftime("%H:%M:%S", time.localtime())
+              
+        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), self.strTime)
         self.clock_button.on_clicked.connect(self.main_action)
         self.add_child(self.clock_button)
         
@@ -75,8 +78,15 @@ class MainScreen(ui.Scene):
         self.quit_button.on_clicked.connect(self.main_action)
         self.add_child(self.quit_button)
         
+        #while True:
+            #clock.tick(30)
+        self.strTime = time.strftime("%H:%M:%S", time.localtime())
+            #text = " Time: " + str(self.strTime)
+            #pygame.display.set_caption(text)
+            #self.update('')
+        
     def main_action(self, btn, mbtn):
-        logger.info(btn.text)
+        logger.info(mbtn)
         if btn.text == 'Clock':
             logger.info('Clock was clicked!!!')
             ui.scene.push(MenuScreen())
