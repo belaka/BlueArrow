@@ -69,18 +69,18 @@ class MainScreen(ui.Scene):
     def __init__(self):
         ui.Scene.__init__(self)
 		
-		self.clock = ui.pygame.time.Clock()
+        self.clock = ui.pygame.time.Clock()
 		
-		l = dir(ui.pygame)
-		pprint(l, indent=2)
+        l = dir(ui.pygame)
+        pprint(l, indent=2)
 		
-		self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Quit')
-		self.quit_button.on_clicked.connect(self.main_action)
-		self.add_child(self.quit_button)
+        self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Quit')
+        self.quit_button.on_clicked.connect(self.main_action)
+        self.add_child(self.quit_button)
 		
-		self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), str(self.clock.get_fps()))
-		self.clock_button.on_clicked.connect(self.main_action)
-		self.add_child(self.clock_button)
+        self.clock_button = ui.Button(ui.Rect(MARGIN, MARGIN, 280, 140), str(self.clock.get_fps()))
+        self.clock_button.on_clicked.connect(self.main_action)
+        self.add_child(self.clock_button)
 
     def main_action(self, btn, mbtn):
         logger.info(mbtn)
