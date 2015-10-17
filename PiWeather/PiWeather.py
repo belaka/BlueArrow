@@ -70,7 +70,7 @@ class MyDaemon(daemon):
     def run(self):
             while True:
                 # retrieve data from weather.com
-                weather_com_result = pywapi.get_weather_from_weather_com(weatherDotComLocationCode)
+                weather_com_result = pywapi.get_weather_from_yahoo('RSXX0199', 'metric')
                 
                 # extract current data for today
                 today = weather_com_result['forecasts'][0]['day_of_week'][0:3] + " " \

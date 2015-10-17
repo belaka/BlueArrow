@@ -43,6 +43,7 @@ import threading
 import time
 from wifi import *
 from pprint import pprint
+import subprocess
 
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
@@ -63,6 +64,14 @@ if DEV_MODE ==  False:
 LIST_WIDTH = 280
 MARGIN = 20
 SMALL_MARGIN = 10
+
+BLUE = 26, 0, 255
+CREAM = 254, 255, 25
+BLACK = 0, 0, 0
+WHITE = 255, 255, 255
+YELLOW = 255, 255, 0
+RED = 255, 0, 0
+GREEN = 0, 255, 0
 
 class MainScreen(ui.Scene):
 
@@ -106,33 +115,34 @@ class MenuScreen(ui.Scene):
         ui.Scene.__init__(self)
  
         self.system_button = ui.Button(ui.Rect(MARGIN, MARGIN, 130, 60), 'System')
-        self.system_button.on_clicked.connect(self.home_button)
+        self.system_button.on_clicked.connect(self.menu_actions)
         self.add_child(self.system_button)
  
         self.vehicle_button = ui.Button(ui.Rect(170, MARGIN, 130, 60), 'Vehicle')
         self.add_child(self.vehicle_button)
  
         self.media_button = ui.Button(ui.Rect(MARGIN, 100, 130, 60), 'Media')
+        self.media_button.on_clicked.connect(self.menu_actions)
         self.add_child(self.media_button)
  
         self.wifi_button = ui.Button(ui.Rect(170, 100, 130, 60), 'Wifi')
-        self.wifi_button.on_clicked.connect(self.home_button)
+        self.wifi_button.on_clicked.connect(self.menu_actions)
         self.add_child(self.wifi_button)
         
         self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Quit')
-        self.quit_button.on_clicked.connect(self.home_button)
+        self.quit_button.on_clicked.connect(self.menu_actions)
         self.add_child(self.quit_button)
         
-    def home_button(self, btn, mbtn):
+    def menu_actions(self, btn, mbtn):
         logger.info(btn.text)
          
         if btn.text == 'System':
             logger.info('system was clicked!!!')
             ui.scene.push(SystemScreen())
         elif btn.text == 'Vehicle':
-            ui.scene.push(SystemScreen())
+            ui.scene.push(VehicleScreen())
         elif btn.text == 'Media':
-            ui.scene.push(SystemScreen())
+            ui.scene.push(MediaScreen())
         elif btn.text == 'Wifi':
             ui.scene.push(WifiScreen())
         elif btn.text == 'Quit':
@@ -166,7 +176,7 @@ class SystemScreen(ui.Scene):
          
         if btn.text == 'Back':
             logger.info('back was clicked!!!')
-            ui.scene.push(MainScreen())
+            ui.scene.push(MenuScreen())
         elif btn.text == 'Color':
             ui.scene.push(ColorScreen())
         elif btn.text == 'Time':
@@ -236,7 +246,159 @@ class WifiScreen(ui.Scene):
             
     def update(self, dt):
         ui.Scene.update(self, dt)
+
+class MediaScreen(ui.Scene):
+
+    def __init__(self):
+        ui.Scene.__init__(self)
  
+        self.radio_button = ui.Button(ui.Rect(MARGIN, MARGIN, 130, 60), 'Radio')
+        self.radio_button.on_clicked.connect(self.media_actions)
+        self.add_child(self.radio_button)
+ 
+        self.social_button = ui.Button(ui.Rect(170, MARGIN, 130, 60), 'Social')
+        self.social_button.on_clicked.connect(self.media_actions)
+        self.add_child(self.social_button)
+ 
+        self.broadcast_button = ui.Button(ui.Rect(MARGIN, 100, 130, 60), 'Broadcast')
+        self.broadcast_button.on_clicked.connect(self.media_actions)
+        self.add_child(self.broadcast_button)
+ 
+        self.audio_button = ui.Button(ui.Rect(170, 100, 130, 60), 'Audio')
+        self.audio_button.on_clicked.connect(self.media_actions)
+        self.add_child(self.audio_button)
+        
+        self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Back')
+        self.quit_button.on_clicked.connect(self.media_actions)
+        self.add_child(self.quit_button)
+        
+    def media_actions(self, btn, mbtn):
+        logger.info(btn.text)
+         
+        if btn.text == 'Back':
+            logger.info('back was clicked!!!')
+            ui.scene.push(MenuScreen())
+        elif btn.text == 'Radio':
+            logger.info('Radio was clicked!!!')
+            ui.scene.push(PiRadioScreen())
+        elif btn.text == 'Social':
+            ui.scene.push(PiSocialScreen())
+        elif btn.text == 'Broadcast':
+            ui.scene.push(BroadcastScreen())
+        elif btn.text == 'Audio':
+            ui.scene.push(AudioScreen())
+
+    def update(self, dt):
+        ui.Scene.update(self, dt)
+        
+class PiRadioScreen(ui.Scene):
+
+    def __init__(self):
+        ui.Scene.__init__(self)
+        
+        
+ 
+        self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Back')
+        self.quit_button.on_clicked.connect(self.piradio_actions)
+        self.add_child(self.quit_button)
+        
+    def refresh_menu_screen(self):
+        pprint(self)
+    #set up the fixed items on the menu
+        screen = ui.window_surface
+        screen.fill(WHITE) #change the colours if needed
+        font=ui.pygame.font.Font(None,24)
+        title_font=ui.pygame.font.Font(None,34)
+        station_font=ui.pygame.font.Font(None,20)
+        label=title_font.render("MPC RADIO", 1, (BLUE))
+        label2=font.render("Streaming Internet Radio", 1, (RED))
+        screen.blit(label,(105, 15))
+        screen.blit(label2,(88, 45))
+        play=ui.pygame.image.load("PiRadio/play.tiff")
+        pause=ui.pygame.image.load("PiRadio/pause.tiff")
+        refresh=ui.pygame.image.load("PiRadio/refresh.tiff")
+        previous=ui.pygame.image.load("PiRadio/previous.tiff")
+        next=ui.pygame.image.load("PiRadio/next.tiff")
+        vol_down=ui.pygame.image.load("PiRadio/volume_down.tiff")
+        vol_up=ui.pygame.image.load("PiRadio/volume_up.tiff")
+        mute=ui.pygame.image.load("PiRadio/mute.png")
+        exit=ui.pygame.image.load("PiRadio/exit.tiff")
+        radio=ui.pygame.image.load("PiRadio/radio.tiff")
+        # draw the main elements on the screen
+        screen.blit(play,(20,80))	
+        screen.blit(pause,(80,80))
+        ui.pygame.draw.rect(screen, RED, (8, 70, 304, 108),1)
+        ui.pygame.draw.line(screen, RED, (8,142),(310,142),1)
+        ui.pygame.draw.rect(screen, CREAM, (10, 143, 300, 33),0)
+        screen.blit(refresh,(270,70))
+        screen.blit(previous,(10,180))
+        screen.blit(next,(70,180))
+        screen.blit(vol_down,(130,180))
+        screen.blit(vol_up,(190,180))
+        screen.blit(mute,(250,180))	
+        screen.blit(exit,(270,5))
+        screen.blit(radio,(2,1))
+        ui.pygame.draw.rect(screen, BLUE, (0,0,320,240),3)
+        ##### display the station name and split it into 2 parts : 
+        station = subprocess.check_output("mpc current", shell=True )
+        lines=station.split(":")
+        length = len(lines) 
+        if length==1:
+            line1 = lines[0]
+            line1 = line1[:-1]
+            line2 = "No additional info: "
+        else:
+            line1 = lines[0]
+            line2 = lines[1]
+
+        line2 = line2[:42]
+        line2 = line2[:-1]
+        #trap no station data
+        if line1 =="":
+            line2 = "Press PLAY or REFRESH"
+            station_status = "stopped"
+            status_font = RED
+        else:
+            station_status = "playing"
+            status_font = GREEN
+        station_name=station_font.render(line1, 1, (RED))
+        additional_data=station_font.render(line2, 1, (BLUE))
+        station_label=title_font.render(station_status, 1, (status_font))
+        screen.blit(station_label,(175,100))
+        screen.blit(station_name,(13,145))
+        screen.blit(additional_data,(12,160))
+        ######## add volume number
+        volume = subprocess.check_output("mpc volume", shell=True )
+        volume = volume[8:]
+        volume = volume[:-1]
+        volume_tag=font.render(volume, 1, (BLACK))
+        screen.blit(volume_tag,(175,75))
+        ####### check to see if the Radio is connected to the internet
+        IP = subprocess.check_output("hostname -I", shell=True )
+        IP=IP[:3]
+        if IP =="192":
+            network_status = "online"
+            status_font = GREEN
+
+        else:
+            network_status = "offline"
+            status_font = RED
+
+        network_status_label = font.render(network_status, 1, (status_font))
+        screen.blit(network_status_label, (215,75))
+        ui.pygame.display.flip()
+        
+    def piradio_actions(self, btn, mbtn):
+        logger.info(btn.text)
+         
+        if btn.text == 'Back':
+            logger.info('back was clicked!!!')
+            ui.scene.push(MediaScreen())
+
+    def update(self, dt):
+        self.refresh_menu_screen()
+        ui.Scene.update(self, dt)
+         
  
 ui.init('BlueArrow UI', (320, 240))
 pygame.mouse.set_visible(DEV_MODE)
