@@ -46,6 +46,8 @@ from pprint import pprint
 import subprocess
 import cv2.cv as cv
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '.'))
+
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter(log_format))
@@ -298,6 +300,7 @@ class WebcamScreen(ui.Scene):
 
     def __init__(self):
         ui.Scene.__init__(self)
+        
         self.capture = cv.CaptureFromCAM(camera_index)
         
         
@@ -318,7 +321,6 @@ class WebcamScreen(ui.Scene):
             ui.scene.push(WebcamScreen())
 
     def update(self, dt):
-        ui.Scene.update(self, dt)
         frame = cv.QueryFrame(self.capture)
         if frame is None:
             print "fail with putting in frame"
@@ -327,9 +329,18 @@ class WebcamScreen(ui.Scene):
             c = cv.WaitKey(100)
             print 'capturing!'
             cv.SaveImage("pictest.png", frame)
-            img=ui.pygame.image.load("pictest.png")
-            ui.window_surface.blit(img,(0,0))
-        
+            image = ui.pygame.image.load('pictest.png')
+            if not image:
+                print "fail loading image"
+                
+            self.info_button = ui.ImageButton(ui.Rect(
+                0,
+                0,
+                0, 0), image)
+            self.add_child(self.info_button)
+            
+        ui.Scene.update(self, dt)
+            
 class PiRadioScreen(ui.Scene):
 
     def __init__(self):
