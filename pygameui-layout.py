@@ -57,7 +57,7 @@ logger.addHandler(console_handler)
 
 camera_index = 0
 
-DEV_MODE = True
+DEV_MODE = False
 
 if DEV_MODE ==  False:
     os.putenv('SDL_FBDEV', '/dev/fb1')
