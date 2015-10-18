@@ -57,7 +57,7 @@ logger.addHandler(console_handler)
 
 camera_index = 0
 
-DEV_MODE = True
+DEV_MODE = False
 
 if DEV_MODE ==  False:
     os.putenv('SDL_FBDEV', '/dev/fb1')
@@ -383,22 +383,49 @@ class PiRadioScreen(ui.Scene):
         self.mute_button.on_clicked.connect(self.radio_actions)
         self.add_child(self.mute_button)
         
-        station_name = 'Station Name';
-        self.station_label = ui.Label(ui.Rect(SMALL_MARGIN,70,320,60), station_name, 1, 3)
-        self.station_label.text_color = RED
-        self.station_label.text_shadow_color = WHITE
-        self.station_label.text_shadow_offset= 0
-        self.station_label.font = ui.pygame.font.Font(None,24)
-        self.station_label.shadowed = False
-        self.station_label.layout()
+        station_name = self.get_station_name();
+        self.station_label = ui.Label(ui.Rect(0,60,320,60), station_name, 1, 3, 0)
         self.add_child(self.station_label)
         
+        song_info = self.get_song_info();
+        self.song_label = ui.Label(ui.Rect(0,120,320,60), song_info, 1, 3, 0)
+        self.add_child(self.song_label)
         
+        
+    def get_station_name(self):
+        station = subprocess.check_output("mpc current", shell=True )
+        lines=station.split(":")
+        if lines[0] == '':
+            station_name = 'Not Connected'
+        else:
+            station_name = lines[0]
+        return station_name
+        
+    def get_song_info(self):
+        station = subprocess.check_output("mpc current", shell=True )
+        lines=station.split(":")
+        length = len(lines)
+        if length==1:
+            song_info = "Press PLAY or REFRESH"
+        elif lines[1] == '':
+            song_info = "No additional info: "
+        else:
+            song_info = lines[1]
+        return song_info
+
+    def refresh_radio_info(self):
+        station_name = self.get_station_name();
+        self.station_label = ui.Label(ui.Rect(0,60,320,60), station_name, 1, 3, 0)
+        self.add_child(self.station_label)
+        
+        song_info = self.get_song_info();
+        self.song_label = ui.Label(ui.Rect(0,120,320,60), song_info, 1, 3, 0)
+        self.add_child(self.song_label)   
+            
         
     def refresh_menu_screen(self):
         pprint(self)
-    #set up the fixed items on the menu
-        
+        ### UNUSED FOR NOW ###
         ##### display the station name and split it into 2 parts : 
         station = subprocess.check_output("mpc current", shell=True )
         lines=station.split(":")
@@ -421,6 +448,7 @@ class PiRadioScreen(ui.Scene):
         else:
             station_status = "playing"
             status_font = GREEN
+            
         station_name=station_font.render(line1, 1, (RED))
         additional_data=station_font.render(line2, 1, (BLUE))
         station_label=title_font.render(station_status, 1, (status_font))
@@ -466,7 +494,7 @@ class PiRadioScreen(ui.Scene):
             subprocess.call("mpc volume -10 ", shell=True)
 
     def update(self, dt):
-        #self.refresh_menu_screen()
+        self.refresh_radio_info()
         ui.Scene.update(self, dt)
          
  
