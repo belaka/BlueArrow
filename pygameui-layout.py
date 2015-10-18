@@ -300,25 +300,19 @@ class WebcamScreen(ui.Scene):
 
     def __init__(self):
         ui.Scene.__init__(self)
+        image = ui.pygame.image.load('webcam.png')
+        if not image:
+            print "fail loading image"
+                
+        self.webcam_button = ui.ImageButton(ui.Rect(0,0,320, 240), image)
+        self.webcam_button.on_clicked.connect(self.webcam_action)
+        self.add_child(self.webcam_button)
         
         self.capture = cv.CaptureFromCAM(camera_index)
         
         
-    def media_actions(self, btn, mbtn):
-        logger.info(btn.text)
-         
-        if btn.text == 'Back':
-            logger.info('back was clicked!!!')
-            ui.scene.push(MediaScreen())
-        elif btn.text == 'Radio':
-            logger.info('Radio was clicked!!!')
-            ui.scene.push(PiRadioScreen())
-        elif btn.text == 'Social':
-            ui.scene.push(PiSocialScreen())
-        elif btn.text == 'Broadcast':
-            ui.scene.push(BroadcastScreen())
-        elif btn.text == 'Webcam':
-            ui.scene.push(WebcamScreen())
+    def webcam_action(self, btn, mbtn):
+        ui.scene.push(MediaScreen())
 
     def update(self, dt):
         frame = cv.QueryFrame(self.capture)
@@ -333,11 +327,9 @@ class WebcamScreen(ui.Scene):
             if not image:
                 print "fail loading image"
                 
-            self.info_button = ui.ImageButton(ui.Rect(
-                0,
-                0,
-                0, 0), image)
-            self.add_child(self.info_button)
+            self.webcam_button = ui.ImageButton(ui.Rect(0,0,320, 240), image)
+            self.webcam_button.on_clicked.connect(self.webcam_action)
+            self.add_child(self.webcam_button)
             
         ui.Scene.update(self, dt)
             
