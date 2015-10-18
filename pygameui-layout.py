@@ -323,11 +323,11 @@ class WebcamScreen(ui.Scene):
             c = cv.WaitKey(100)
             print 'capturing!'
             cv.SaveImage("pictest.png", frame)
-            image = ui.pygame.image.load('pictest.png')
-            if not image:
+            picture = ui.pygame.image.load('pictest.png')
+            if not picture:
                 print "fail loading image"
-                
-            self.webcam_button = ui.ImageButton(ui.Rect(0,0,320, 240), image)
+            
+            self.webcam_button = ui.ImageButton(ui.Rect(0,0,320, 240), ui.pygame.transform.scale(picture, (320, 240)))
             self.webcam_button.on_clicked.connect(self.webcam_action)
             self.add_child(self.webcam_button)
             
