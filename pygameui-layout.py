@@ -298,7 +298,7 @@ class WebcamScreen(ui.Scene):
 
     def __init__(self):
         ui.Scene.__init__(self)
-        capture = cv.CaptureFromCAM(camera_index)
+        self.capture = cv.CaptureFromCAM(camera_index)
         
         
     def media_actions(self, btn, mbtn):
@@ -319,7 +319,7 @@ class WebcamScreen(ui.Scene):
 
     def update(self, dt):
         ui.Scene.update(self, dt)
-        frame = cv.QueryFrame(capture)
+        frame = cv.QueryFrame(self.capture)
         if frame is None:
             print "fail with putting in frame"
 
