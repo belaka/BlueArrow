@@ -14,7 +14,7 @@ pygame.init()
 pygame.camera.init()
 
 #create fullscreen display 640x480
-screen = pygame.display.set_mode((640,480),0)
+screen = pygame.display.set_mode((320, 240),0)
 
 #find, open and start low-res camera
 cam_list = pygame.camera.list_cameras()
@@ -24,7 +24,7 @@ webcam.start()
 while True:
     #grab image, scale and blit to screen
     imagen = webcam.get_image()
-    imagen = pygame.transform.scale(imagen,(640,480))
+    imagen = pygame.transform.scale(imagen,(320, 240))
     screen.blit(imagen,(0,0))
 
     #draw all updates to display
