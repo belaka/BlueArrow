@@ -57,7 +57,7 @@ logger.addHandler(console_handler)
 
 camera_index = 0
 
-DEV_MODE = False
+DEV_MODE = True
 
 if DEV_MODE ==  False:
     os.putenv('SDL_FBDEV', '/dev/fb1')
@@ -338,49 +338,60 @@ class PiRadioScreen(ui.Scene):
     def __init__(self):
         ui.Scene.__init__(self)
         
+        play_image = ui.pygame.image.load("PiRadio/play.tiff")
+        self.play_button = ui.ImageButton(ui.Rect(20,80,10,10), play_image)
+        self.play_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.play_button)
         
- 
-        self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Back')
-        self.quit_button.on_clicked.connect(self.piradio_actions)
-        self.add_child(self.quit_button)
+        pause_image = ui.pygame.image.load("PiRadio/pause.tiff")
+        self.pause_button = ui.ImageButton(ui.Rect(80,80,0,0), pause_image)
+        self.pause_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.pause_button)
+        
+        refresh_image = ui.pygame.image.load("PiRadio/refresh.tiff")
+        self.refresh_button = ui.ImageButton(ui.Rect(270,70,0,0), refresh_image)
+        self.refresh_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.refresh_button)
+        
+        previous_image = ui.pygame.image.load("PiRadio/previous.tiff")
+        self.previous_button = ui.ImageButton(ui.Rect(10,180,0,0), previous_image)
+        self.previous_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.previous_button)
+        
+        next_image = ui.pygame.image.load("PiRadio/next.tiff")
+        self.next_button = ui.ImageButton(ui.Rect(70,180,0,0), next_image)
+        self.next_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.next_button)
+        
+        vol_down_image = ui.pygame.image.load("PiRadio/volume_down.tiff")
+        self.vol_down_button = ui.ImageButton(ui.Rect(130,180,0,0), vol_down_image)
+        self.vol_down_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.vol_down_button)
+        
+        vol_up_image = ui.pygame.image.load("PiRadio/volume_up.tiff")
+        self.vol_up_button = ui.ImageButton(ui.Rect(190,180,0,0), vol_up_image)
+        self.vol_up_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.vol_up_button)
+        
+        mute_image = ui.pygame.image.load("PiRadio/mute.png")
+        self.mute_button = ui.ImageButton(ui.Rect(250,180,0,0), mute_image)
+        self.mute_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.mute_button)
+        
+        exit_image = ui.pygame.image.load("PiRadio/exit.tiff")
+        self.exit_button = ui.ImageButton(ui.Rect(270,5,0,0), exit_image)
+        self.exit_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.exit_button)
+        
+        radio_image = ui.pygame.image.load("PiRadio/radio.tiff")
+        self.radio_button = ui.ImageButton(ui.Rect(2,1,0,0), radio_image)
+        self.add_child(self.radio_button)
+        
         
     def refresh_menu_screen(self):
         pprint(self)
     #set up the fixed items on the menu
-        screen = ui.window_surface
-        screen.fill(WHITE) #change the colours if needed
-        font=ui.pygame.font.Font(None,24)
-        title_font=ui.pygame.font.Font(None,34)
-        station_font=ui.pygame.font.Font(None,20)
-        label=title_font.render("MPC RADIO", 1, (BLUE))
-        label2=font.render("Streaming Internet Radio", 1, (RED))
-        screen.blit(label,(105, 15))
-        screen.blit(label2,(88, 45))
-        play=ui.pygame.image.load("PiRadio/play.tiff")
-        pause=ui.pygame.image.load("PiRadio/pause.tiff")
-        refresh=ui.pygame.image.load("PiRadio/refresh.tiff")
-        previous=ui.pygame.image.load("PiRadio/previous.tiff")
-        next=ui.pygame.image.load("PiRadio/next.tiff")
-        vol_down=ui.pygame.image.load("PiRadio/volume_down.tiff")
-        vol_up=ui.pygame.image.load("PiRadio/volume_up.tiff")
-        mute=ui.pygame.image.load("PiRadio/mute.png")
-        exit=ui.pygame.image.load("PiRadio/exit.tiff")
-        radio=ui.pygame.image.load("PiRadio/radio.tiff")
-        # draw the main elements on the screen
-        screen.blit(play,(20,80))	
-        screen.blit(pause,(80,80))
-        ui.pygame.draw.rect(screen, RED, (8, 70, 304, 108),1)
-        ui.pygame.draw.line(screen, RED, (8,142),(310,142),1)
-        ui.pygame.draw.rect(screen, CREAM, (10, 143, 300, 33),0)
-        screen.blit(refresh,(270,70))
-        screen.blit(previous,(10,180))
-        screen.blit(next,(70,180))
-        screen.blit(vol_down,(130,180))
-        screen.blit(vol_up,(190,180))
-        screen.blit(mute,(250,180))	
-        screen.blit(exit,(270,5))
-        screen.blit(radio,(2,1))
-        ui.pygame.draw.rect(screen, BLUE, (0,0,320,240),3)
+        
         ##### display the station name and split it into 2 parts : 
         station = subprocess.check_output("mpc current", shell=True )
         lines=station.split(":")
@@ -430,15 +441,25 @@ class PiRadioScreen(ui.Scene):
         screen.blit(network_status_label, (215,75))
         ui.pygame.display.flip()
         
-    def piradio_actions(self, btn, mbtn):
-        logger.info(btn.text)
-         
-        if btn.text == 'Back':
-            logger.info('back was clicked!!!')
+    def radio_actions(self, btn, mbtn):
+        if self.exit_button == btn:
             ui.scene.push(MediaScreen())
+        elif self.play_button == btn:
+            subprocess.call("mpc play ", shell=True)
+        elif self.pause_button == btn:
+            subprocess.call("mpc stop ", shell=True)
+        elif self.refresh_button == btn:
+            subprocess.call("mpc stop ", shell=True)
+            subprocess.call("mpc play ", shell=True)
+        elif self.mute_button == btn:
+            subprocess.call("mpc volume 0 ", shell=True)
+        elif self.vol_up_button == btn:
+            subprocess.call("mpc volume +10 ", shell=True)
+        elif self.vol_down_button == btn:
+            subprocess.call("mpc volume -10 ", shell=True)
 
     def update(self, dt):
-        self.refresh_menu_screen()
+        #self.refresh_menu_screen()
         ui.Scene.update(self, dt)
          
  
