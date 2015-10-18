@@ -1,40 +1,30 @@
+import sys
 import pygame
 import pygame.camera
-from time import sleep
-import sys
 
 pygame.init()
 pygame.camera.init()
 
-mycams = pygame.camera.list_cameras()
+#create fullscreen display 640x480
+screen = pygame.display.set_mode((640,480),0)
 
-if mycams:
-    # Assume first camera is the one we want
-    mycamera = mycams[0]
-else:
-    print "No camera found"
-    sys.exit(0)
+#find, open and start low-res camera
+cam_list = pygame.camera.list_cameras()
+webcam = pygame.camera.Camera(cam_list[0],(32,24))
+webcam.start()
 
-cam = pygame.camera.Camera(mycamera, (300,240))
-cam.start()
+while True:
+    #grab image, scale and blit to screen
+    imagen = webcam.get_image()
+    imagen = pygame.transform.scale(imagen,(640,480))
+    screen.blit(imagen,(0,0))
 
-screen = pygame.display.set_mode((300,240))
+    #draw all updates to display
+    pygame.display.update()
 
-camera_quit = False
-
-while not camera_quit:
+    # check for quit events
     for event in pygame.event.get():
-       
-        # Handle quit message received
         if event.type == pygame.QUIT:
-            camera_quit=True
-       
-        # 'Q' to quit   
-        if (event.type == pygame.KEYUP):
-            if (event.key == pygame.K_q):
-                camera_quit = True
-   
-    im = pygame.transform.flip(cam.get_image(),True, False)
-    screen.blit(im,(0,0))
-    pygame.display.flip()
-    sleep(0.1)
+            webcam.stop()
+            pygame.quit()
+            sys.exit()
