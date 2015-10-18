@@ -1,6 +1,14 @@
 import sys
+import os
 import pygame
 import pygame.camera
+
+DEV_MODE = False
+
+if DEV_MODE ==  False:
+    os.putenv('SDL_FBDEV', '/dev/fb1')
+    os.putenv('SDL_MOUSEDRV', 'TSLIB')
+    os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
 
 pygame.init()
 pygame.camera.init()
