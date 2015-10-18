@@ -1,9 +1,11 @@
 import sys
 import os
 import pygame
-import pygame.camera
+import cv2.cv as cv
 
-DEV_MODE = False
+camera_index = 0
+
+DEV_MODE = True
 
 if DEV_MODE ==  False:
     os.putenv('SDL_FBDEV', '/dev/fb1')
@@ -11,25 +13,28 @@ if DEV_MODE ==  False:
     os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
 
 pygame.init()
-pygame.camera.init()
 
 #create fullscreen display 640x480
 screen = pygame.display.set_mode((320, 240),0)
 
-#find, open and start low-res camera
-cam_list = pygame.camera.list_cameras()
-webcam = pygame.camera.Camera(cam_list[0],(32,24))
-webcam.start()
+capture = cv.CaptureFromCAM(camera_index)
+while not capture:
+  print "error opening capture device, correction attempt"
 
 while True:
-    #grab image, scale and blit to screen
-    imagen = webcam.get_image()
-    imagen = pygame.transform.scale(imagen,(320, 240))
-    screen.blit(imagen,(0,0))
+    frame = cv.QueryFrame(capture)
+    if frame is None:
+        print "fail with putting in frame"
 
-    #draw all updates to display
+    else:
+        c = cv.WaitKey(100)
+        print 'capturing!'
+        cv.SaveImage("pictest.png", frame)
+        img=pygame.image.load("pictest.png")
+        screen.blit(img,(0,0))
+        
     pygame.display.update()
-
+    
     # check for quit events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

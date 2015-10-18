@@ -44,6 +44,7 @@ import time
 from wifi import *
 from pprint import pprint
 import subprocess
+import cv2.cv as cv
 
 log_format = '%(asctime)-6s: %(name)s - %(levelname)s - %(message)s'
 console_handler = logging.StreamHandler()
@@ -51,6 +52,8 @@ console_handler.setFormatter(logging.Formatter(log_format))
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(console_handler)
+
+camera_index = 0
 
 DEV_MODE = False
 
@@ -260,13 +263,13 @@ class MediaScreen(ui.Scene):
         self.social_button.on_clicked.connect(self.media_actions)
         self.add_child(self.social_button)
  
-        self.broadcast_button = ui.Button(ui.Rect(MARGIN, 100, 130, 60), 'Broadcast')
+        self.broadcast_button = ui.Button(ui.Rect(MARGIN, 100, 130, 60), 'Stream')
         self.broadcast_button.on_clicked.connect(self.media_actions)
         self.add_child(self.broadcast_button)
  
-        self.audio_button = ui.Button(ui.Rect(170, 100, 130, 60), 'Audio')
-        self.audio_button.on_clicked.connect(self.media_actions)
-        self.add_child(self.audio_button)
+        self.webcam_button = ui.Button(ui.Rect(170, 100, 130, 60), 'Webcam')
+        self.webcam_button.on_clicked.connect(self.media_actions)
+        self.add_child(self.webcam_button)
         
         self.quit_button = ui.Button(ui.Rect(MARGIN, 180, 280, 30), 'Back')
         self.quit_button.on_clicked.connect(self.media_actions)
@@ -285,11 +288,47 @@ class MediaScreen(ui.Scene):
             ui.scene.push(PiSocialScreen())
         elif btn.text == 'Broadcast':
             ui.scene.push(BroadcastScreen())
-        elif btn.text == 'Audio':
-            ui.scene.push(AudioScreen())
+        elif btn.text == 'Webcam':
+            ui.scene.push(WebcamScreen())
 
     def update(self, dt):
         ui.Scene.update(self, dt)
+        
+class WebcamScreen(ui.Scene):
+
+    def __init__(self):
+        ui.Scene.__init__(self)
+        capture = cv.CaptureFromCAM(camera_index)
+        
+        
+    def media_actions(self, btn, mbtn):
+        logger.info(btn.text)
+         
+        if btn.text == 'Back':
+            logger.info('back was clicked!!!')
+            ui.scene.push(MediaScreen())
+        elif btn.text == 'Radio':
+            logger.info('Radio was clicked!!!')
+            ui.scene.push(PiRadioScreen())
+        elif btn.text == 'Social':
+            ui.scene.push(PiSocialScreen())
+        elif btn.text == 'Broadcast':
+            ui.scene.push(BroadcastScreen())
+        elif btn.text == 'Webcam':
+            ui.scene.push(WebcamScreen())
+
+    def update(self, dt):
+        ui.Scene.update(self, dt)
+        frame = cv.QueryFrame(capture)
+        if frame is None:
+            print "fail with putting in frame"
+
+        else:
+            c = cv.WaitKey(100)
+            print 'capturing!'
+            cv.SaveImage("pictest.png", frame)
+            img=ui.pygame.image.load("pictest.png")
+            ui.window_surface.blit(img,(0,0))
         
 class PiRadioScreen(ui.Scene):
 
