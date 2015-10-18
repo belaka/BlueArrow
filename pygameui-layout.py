@@ -57,7 +57,7 @@ logger.addHandler(console_handler)
 
 camera_index = 0
 
-DEV_MODE = False
+DEV_MODE = True
 
 if DEV_MODE ==  False:
     os.putenv('SDL_FBDEV', '/dev/fb1')
@@ -339,22 +339,27 @@ class PiRadioScreen(ui.Scene):
         ui.Scene.__init__(self)
         
         play_image = ui.pygame.image.load("PiRadio/play.tiff")
-        self.play_button = ui.ImageButton(ui.Rect(20,80,10,10), play_image)
+        self.play_button = ui.ImageButton(ui.Rect(SMALL_MARGIN,0,0,0), play_image)
         self.play_button.on_clicked.connect(self.radio_actions)
         self.add_child(self.play_button)
         
         pause_image = ui.pygame.image.load("PiRadio/pause.tiff")
-        self.pause_button = ui.ImageButton(ui.Rect(80,80,0,0), pause_image)
+        self.pause_button = ui.ImageButton(ui.Rect(70,0,0,0), pause_image)
         self.pause_button.on_clicked.connect(self.radio_actions)
         self.add_child(self.pause_button)
         
         refresh_image = ui.pygame.image.load("PiRadio/refresh.tiff")
-        self.refresh_button = ui.ImageButton(ui.Rect(270,70,0,0), refresh_image)
+        self.refresh_button = ui.ImageButton(ui.Rect(190,0,0,0), refresh_image)
         self.refresh_button.on_clicked.connect(self.radio_actions)
         self.add_child(self.refresh_button)
         
+        exit_image = ui.pygame.image.load("PiRadio/exit.tiff")
+        self.exit_button = ui.ImageButton(ui.Rect(250,0,0,0), exit_image)
+        self.exit_button.on_clicked.connect(self.radio_actions)
+        self.add_child(self.exit_button)
+        
         previous_image = ui.pygame.image.load("PiRadio/previous.tiff")
-        self.previous_button = ui.ImageButton(ui.Rect(10,180,0,0), previous_image)
+        self.previous_button = ui.ImageButton(ui.Rect(SMALL_MARGIN,180,0,0), previous_image)
         self.previous_button.on_clicked.connect(self.radio_actions)
         self.add_child(self.previous_button)
         
@@ -378,14 +383,16 @@ class PiRadioScreen(ui.Scene):
         self.mute_button.on_clicked.connect(self.radio_actions)
         self.add_child(self.mute_button)
         
-        exit_image = ui.pygame.image.load("PiRadio/exit.tiff")
-        self.exit_button = ui.ImageButton(ui.Rect(270,5,0,0), exit_image)
-        self.exit_button.on_clicked.connect(self.radio_actions)
-        self.add_child(self.exit_button)
+        station_name = 'Station Name';
+        self.station_label = ui.Label(ui.Rect(SMALL_MARGIN,70,320,60), station_name, 1, 3)
+        self.station_label.text_color = RED
+        self.station_label.text_shadow_color = WHITE
+        self.station_label.text_shadow_offset= 0
+        self.station_label.font = ui.pygame.font.Font(None,24)
+        self.station_label.shadowed = False
+        self.station_label.layout()
+        self.add_child(self.station_label)
         
-        radio_image = ui.pygame.image.load("PiRadio/radio.tiff")
-        self.radio_button = ui.ImageButton(ui.Rect(2,1,0,0), radio_image)
-        self.add_child(self.radio_button)
         
         
     def refresh_menu_screen(self):
